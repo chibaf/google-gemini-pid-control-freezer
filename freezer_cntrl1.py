@@ -45,7 +45,8 @@ def read_temperature_from_serial():
             # Assuming the serial output is a simple temperature string (e.g., "Temp: -18.5")
             # You may need to adjust the parsing logic based on your sensor's exact output format
             temp_str = line.split(",")
-            temperature = float(temp_str[3])
+            print(temp_str)
+            temperature = float(temp_str[2])
             return temperature
     except Exception as e:
         print(f"Error reading or parsing serial data: {e}")
@@ -61,16 +62,24 @@ def control_freezer(output_value):
     on_time = (output_value / 100.0) * SUB_CYCLE_TIME
     off_time = SUB_CYCLE_TIME - on_time
 
-    if on_time > 0:
-        GPIO.output(GPIO_PIN, GPIO.HIGH) # Turn freezer ON
-        time.sleep(on_time)
-    
     if off_time > 0:
-        GPIO.output(GPIO_PIN, GPIO.LOW) # Turn freezer OFF
+        GPIO.output(GPIO_PIN, GPIO.HIGH) # Turn freezer ON
+        print("on")
         time.sleep(off_time)
     
+    if on_time > 0:
+        GPIO.output(GPIO_PIN, GPIO.LOW) # Turn freezer OFF
+        print("off")
+        time.sleep(on_time)
+    
     # Note: the actual loop sleep time in main() needs to accommodate this sub_cycle
+    
+from datetime import date    
+current_time = time.strftime("_H%H_M%M_S%S", time.localtime())
+fn = "LR5-SSR_" + str(date.today()) + current_time + ".csv"
+f=open(fn, 'w', encoding="utf-8")
 
+timest=time.time()
 # --- Main loop ---
 try:
     while True:
@@ -83,7 +92,7 @@ try:
             if current_temp is not None:
                 pid_output = pid(current_temp)
                 print(f"Time: {int(time.time() - cycle_start_time)}s | Temp: {current_temp}°C | PID Output: {pid_output:.2f}")
-                
+                f.write(str(time.time()-timest)+","+str(current_temp))
                 # Control the freezer for a short interval
                 control_freezer(pid_output) 
                 
@@ -105,5 +114,6 @@ except Exception as e:
 finally:
     GPIO.cleanup() # Clean up GPIO settings on exit
     ser.close()
+    f.close()
     print("Cleanup finished.")
 
