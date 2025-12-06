@@ -13,9 +13,9 @@ CONTROL_DURATION = 1500       # Control phase duration in seconds (25 minutes)
 OFF_DURATION = 300            # Off phase duration in seconds (5 minutes)
 
 # PID parameters (these will likely need tuning for your specific freezer)
-P = 10.0
-I = 0.5
-D = 2.0
+P = 1.0
+I = 1.0
+D = 1.0
 OUTPUT_LIMIT = (0, 100) # Output as percentage of the cycle duration
 
 # --- Setup ---
@@ -46,7 +46,7 @@ def read_temperature_from_serial():
             # You may need to adjust the parsing logic based on your sensor's exact output format
             temp_str = line.split(",")
             print(temp_str)
-            temperature = float(temp_str[2])
+            temperature = float(temp_str[4])
             return temperature
     except Exception as e:
         print(f"Error reading or parsing serial data: {e}")
@@ -58,19 +58,19 @@ def control_freezer(output_value):
     # Use this to calculate the on-time for a short cycle (e.g., 60 seconds cycle within the main loop)
     # A simple on/off control within a sub-cycle is robust for freezers
     
-    SUB_CYCLE_TIME = 60 # seconds
+    SUB_CYCLE_TIME = 10 # seconds
     on_time = (output_value / 100.0) * SUB_CYCLE_TIME
     off_time = SUB_CYCLE_TIME - on_time
 
-    if off_time > 0:
+    if on_time > 0:
         GPIO.output(GPIO_PIN, GPIO.HIGH) # Turn freezer ON
         print("on")
-        time.sleep(off_time)
+        time.sleep(on_time)
     
-    if on_time > 0:
+    if off_time > 0:
         GPIO.output(GPIO_PIN, GPIO.LOW) # Turn freezer OFF
         print("off")
-        time.sleep(on_time)
+        time.sleep(off_time)
     
     # Note: the actual loop sleep time in main() needs to accommodate this sub_cycle
     
