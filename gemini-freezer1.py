@@ -58,8 +58,9 @@ pid.set_point = TARGET_TEMP
 
 print(f"Freezer control script started. Target temp: {TARGET_TEMP}°C")
 
-fn = "Gemini_" + str(date.today()) + current_time + ".csv"
+fn = "Gemini_" + str(date.today()) + time.strftime("_H%H_M%M_S%S", time.localtime()) + ".csv"
 f=open(fn, 'w', encoding="utf-8")
+start=time.time()
 
 # --- Main Control Loop ---
 try:
@@ -114,7 +115,7 @@ try:
                 ser.close()
                 ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
             
-            time.sleep(1) # Small delay to prevent busy looping and allow other processes
+            time.sleep(5) # Small delay to prevent busy looping and allow other processes
 
         # (1-2) Off phase (1500s to 1800s)
         GPIO.output(GPIO_PIN, GPIO.LOW) # Ensure freezer is OFF during the mandated off cycle
