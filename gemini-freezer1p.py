@@ -66,7 +66,6 @@ start=time.time()
 plt.figure(100)
 y1=[0]*100
 x = range(0, 100, 1)
-plt.ylim(-25,10)
 
 # --- Main Control Loop ---
 try:
@@ -82,7 +81,7 @@ try:
                 if line:
                     parts = line.split(',')
                     if parts[0] == '03' and len(parts) > 2:
-                        current_temp = float(parts[2]) # Use data1 as temperature
+                        current_temp = float(parts[3]) # Use data1 as temperature
                         
                         # Calculate PID output (which is now a duration or a percentage)
                         # For simple on-off control we need to map PID output to a duty cycle or on-time
@@ -116,6 +115,7 @@ try:
                         plt.clf()
                         y1.pop(-1)
                         y1.insert(0,current_temp)
+                        plt.ylim(-30,20)
                         title=str(round(time.time()-start,2))+',current_temp='+str(round(current_temp,2))+','+"ssr18="+str(ssr18)
                         plt.plot(x,y1)
                         plt.pause(0.1)
