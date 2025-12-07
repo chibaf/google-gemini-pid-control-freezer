@@ -15,3 +15,18 @@ time interval is 1800sec.<br>
 <br>
 Can you write a program for this operation by python.<br>
 </ul>
+
+<ul>
+   Control a freezer’s temperature by PID method by python on Raspberry Pi<br>
+(1) Target temperature: -20<br>
+(2) input temperature from serial<br>
+   /dev/ttyUSB0, speed=115200/sec<br>
+(3) data format<br>
+    tag, date, temperature x10<br>
+    we use the first temperature<br>
+(4) operation cycle=1800sec    <br>
+   (4-1) 0~1500sec       switch on/off via GPIO=18<br>
+   (4-2) 1500~1800sec<br>
+     switch off via GPIO=18<br>
+(5) the next operation cycle<br>
+</ul>
