@@ -112,11 +112,12 @@ try:
                         row=st + ss[1:5] + "," + sss + ","
                         row=row+str(current_temp)+","+str(ssr18)+"\n"
                         f.write(row)
+                        title=str(round(time.time()-start,2))+',current_temp='+str(round(current_temp,2))+','+"ssr18="+str(ssr18)
                         plt.clf()
+                        plt.title(title)
                         y1.pop(-1)
                         y1.insert(0,current_temp)
                         plt.ylim(-30,20)
-                        title=str(round(time.time()-start,2))+',current_temp='+str(round(current_temp,2))+','+"ssr18="+str(ssr18)
                         plt.plot(x,y1)
                         plt.pause(0.1)
             except (ValueError, IndexError) as e:
