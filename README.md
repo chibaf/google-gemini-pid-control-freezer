@@ -1,5 +1,6 @@
 # google-pid-control-freezer
 
+## I
 <ul>
 I want to control temperature of a freezer using PID control on Raspberry Pi.<br>
 <br>
@@ -16,6 +17,7 @@ time interval is 1800sec.<br>
 Can you write a program for this operation by python.<br>
 </ul>
 
+## II
 <ul>
    Control a freezer’s temperature by PID method by python on Raspberry Pi<br>
 (1) Target temperature: -20<br>
