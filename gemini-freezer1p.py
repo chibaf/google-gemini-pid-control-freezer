@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 # --- Configuration ---
 SERIAL_PORT = '/dev/ttyUSB0'
 BAUD_RATE = 115200
-GPIO_PIN = 18
+#GPIO_PIN = 18
 TARGET_TEMP = -20.0
 CYCLE_TIME = 1800
 ON_TIME_LIMIT = 1500 # Max ON time within a cycle
@@ -52,7 +52,7 @@ except serial.SerialException as e:
     exit()
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(GPIO_PIN, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(18,GPIO.OUT)#, initial=GPIO.LOW)
 
 pid = PID(P=10, I=0.1, D=0.01) # Tune Kp, Ki, Kd values for your specific freezer system
 pid.set_point = TARGET_TEMP
@@ -80,8 +80,8 @@ try:
                 line = ser.readline().decode('utf-8').rstrip()
                 if line:
                     parts = line.split(',')
-                    if parts[0] == '03' and len(parts) > 2:
-                        current_temp = float(parts[3]) # Use data1 as temperature
+                    if parts[0] == '03' and len(parts) > 10:
+                        current_temp = float(parts[2]) # Use data1 as temperature
                         
                         # Calculate PID output (which is now a duration or a percentage)
                         # For simple on-off control we need to map PID output to a duty cycle or on-time
@@ -99,16 +99,18 @@ try:
 
                         # --- Simple On/Off Logic for Demonstration ---
                         if current_temp > TARGET_TEMP:
-                            GPIO.output(GPIO_PIN, GPIO.HIGH) # Turn freezer ON
+                            GPIO.output(18,1) # Turn freezer ON
                             print(f"Temp: {current_temp}°C (Above target). Freezer ON.")
                             ssr18=1
+                            time.sleep(5)
                         else:
-                            GPIO.output(GPIO_PIN, GPIO.LOW) # Turn freezer OFF
+                            GPIO.output(18,0) # Turn freezer OFF
                             ssr18=0
+                            time.sleep(5)
                             print(f"Temp: {current_temp}°C (Below target or at target). Freezer OFF.")
                         st = time.strftime("%Y %b %d %H:%M:%S", time.localtime())
                         ss = str(time.time() - int(time.time()))
-                        sss=str(round(time.time()-start, 2))
+                        sss=str(round(time.time()-start,2))
                         row=st + ss[1:5] + "," + sss + ","
                         row=row+str(current_temp)+","+str(ssr18)+"\n"
                         f.write(row)
@@ -127,14 +129,33 @@ try:
                 ser.close()
                 ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
             
-            time.sleep(5) # Small delay to prevent busy looping and allow other processes
+#            time.sleep(5) # Small delay to prevent busy looping and allow other processes
 
         # (1-2) Off phase (1500s to 1800s)
-        GPIO.output(GPIO_PIN, GPIO.LOW) # Ensure freezer is OFF during the mandated off cycle
+        GPIO.output(18,0) # Ensure freezer is OFF during the mandated off cycle
+        ssr18=0
         print("Mandatory OFF cycle (1500s-1800s). Freezer OFF.")
         while time.time() < cycle_end_time:
-            time.sleep(10) # Sleep for the remainder of the cycle
-
+            time.sleep(5) # Sleep for the remainder of the cycle
+            line = ser.readline().decode('utf-8').rstrip()
+            parts = line.split(',')
+            if parts[0] == '03' and len(parts) > 10:
+              current_temp = float(parts[2])
+              st = time.strftime("%Y %b %d %H:%M:%S", time.localtime())
+              ss = str(time.time() - int(time.time()))
+              sss=str(round(time.time()-start,2))
+              row=st + ss[1:5] + "," + sss + ","
+              row=row+str(current_temp)+","+str(ssr18)+"\n"
+              f.write(row)
+              title=str(round(time.time()-start,2))+',current_temp='+str(round(current_temp,2))+','+"ssr18="+str(ssr18)
+              plt.clf()
+              plt.title(title)
+              y1.pop(-1)
+              y1.insert(0,current_temp)
+              plt.ylim(-30,20)
+              plt.plot(x,y1)
+              plt.pause(0.1)
+#
         # (2) Next operation cycle
         print("Cycle complete. Starting new cycle.")
 
