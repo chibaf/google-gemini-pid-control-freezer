@@ -51,7 +51,7 @@ except serial.SerialException as e:
     print(f"Error opening serial port: {e}")
     exit()
 
-GPIO.setmode(GPIO.BCM)
+GPIO.setmode(GPIO.BOARD)
 GPIO.setup(18,GPIO.OUT)#, initial=GPIO.LOW)
 
 pid = PID(P=10, I=0.1, D=0.01) # Tune Kp, Ki, Kd values for your specific freezer system
