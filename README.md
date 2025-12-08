@@ -1,34 +1,16 @@
 # google-pid-control-freezer
 
-## I
 <ul>
-I want to control temperature of a freezer using PID control on Raspberry Pi.<br>
-<br>
-time interval is 1800sec.<br>
-(1) input=present freezer temperature (getting via USB serial)<br>
-(2) target temperature=-20 degrees C.<br>
-(3) controlling interval = 1800sec<br>
-(3-1) 0<=time<=1500<br>
-   controlling temperature with on/off freezer via GPIO<br>
-(3-2) 1500<time<=1800<br>
-   switch off freezer via GPIO<br>
-(4) Next 1800sec<br>
-<br>
-Can you write a program for this operation by python.<br>
-</ul>
-
-## II
-<ul>
-   Control a freezer’s temperature by PID method by python on Raspberry Pi<br>
-(1) Target temperature: -20<br>
-(2) input temperature from serial<br>
+fix freezer’s temperature by PID control with python on Raspberry Pi<br>
+(0-1) Target temperature: -20 degree C<br>
+(0-2) input  data from serial<br>
    /dev/ttyUSB0, speed=115200/sec<br>
-(3) data format<br>
-    tag, date, temperature x10<br>
-    we use the first temperature<br>
-(4) operation cycle=1800sec    <br>
-   (4-1) 0~1500sec       switch on/off via GPIO=18<br>
-   (4-2) 1500~1800sec<br>
-     switch off via GPIO=18<br>
-(5) the next operation cycle<br>
+(0-3) record format from serial port<br>
+    “03”,data0,data1,data2,data3,data4,data5,data6,data7,data8,data9,data10<br>
+    we use data1 as temperature<br>
+(1) operation cycle=1800sec    <br>
+   (1-1) from 0 sec to 1500sec        control freezer switch via GPIO=18 using PID control<br>
+   (1-2) from 1500sec to 1800sec <br>
+     switch off freezer via GPIO=18<br>
+(2) the next operation cycle: go to (1)<br>
 </ul>
