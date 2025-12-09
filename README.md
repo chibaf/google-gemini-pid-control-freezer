@@ -14,8 +14,8 @@ fix freezer’s temperature by PID control with python on Raspberry Pi<br>
      switch off freezer via GPIO=18<br>
 (2) the next operation cycle: go to (1)<br>
 </ul>
-gemini:
+gemini: https://github.com/chibaf/google-gemini-pid-control-freezer/blob/main/gemini-freezer1.py
 
-modified:
+modified: https://github.com/chibaf/google-gemini-pid-control-freezer/blob/main/gemini-freezer1p.py
 
 <img width="639" height="269" alt="image" src="https://github.com/user-attachments/assets/ebbe2332-cf7b-48ee-87cb-98116f263a8f" />
